@@ -33,6 +33,7 @@ const [positions, setPositions] = useState([]);
 const { role } = useUser();
 const [all_movements, setAllMovements] = useState([]);
 const {deleteData} = useDeleteData();
+const [quantity, setQuantity] = useState([]);
 
 useEffect(() => {
   const loadData = async () => {
@@ -124,10 +125,14 @@ useEffect(() => {
         const result = await fetchData(`http://localhost:5000/movements/${id}/storage/${storageId}`);
         setAllMovements(result);
         const all_positions = await fetchData(`http://localhost:5000/positions/by-storage/${storageId}/product/${id}`);
-      setPositions(all_positions);
+        setPositions(all_positions);
+        const quantity = await fetchData(`http://localhost:5000/products/${id}/stock/${storageId}`);
+        setQuantity(quantity);
       } else{
         const result = await fetchData(`http://localhost:5000/movements/${id}`);
         setAllMovements(result);
+        const quantity = await fetchData(`http://localhost:5000/products/stock/company/${id}`);
+        setQuantity(quantity);
       }
     }
     else{
@@ -135,6 +140,8 @@ useEffect(() => {
       setAllMovements(result);
       const all_positions = await fetchData(`http://localhost:5000/positions/by-storage/${id}/product`);
       setPositions(all_positions); 
+      const quantity = await fetchData(`http://localhost:5000/products/${id}/stock`);
+      setQuantity(quantity);
       }
     }
     loadData();
@@ -175,7 +182,7 @@ useEffect(() => {
       {alert && (<AlertBox message={alertMessage} onClick={handleVisibility}/>)}
       <InfoHeader title={title}/>
         <div className='flex AddProductPageContainer'>
-        <AddProductForm onSubmit={handleAddProduct} data={product}/> 
+        <AddProductForm onSubmit={handleAddProduct} data={product} quantity={quantity}/> 
         {productId &&
          <div className='form' id='ImageBox'>
           <h2>Obrázky</h2>

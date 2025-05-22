@@ -3,7 +3,9 @@ import DeleteButton from '../Images/delete.png';
 import EditButton from '../Images/edit.png';
 import { Link } from 'react-router-dom';
 import Input from './inputs/input';
+import { useUser } from '../context/UserContext';
 const Item = ({name, link, info, deleteFunction}) => {
+    const { role } = useUser();
   return (
     <div className="item">
       <div className='flex itemContainer'>
@@ -18,10 +20,10 @@ const Item = ({name, link, info, deleteFunction}) => {
             <img src={EditButton} alt="" />
             <span>Editovat</span>
         </Link>
-        <div className='deleteItemButton editButton flex'>
+       {role === 3 && <div className='deleteItemButton editButton flex'>
         <img src={DeleteButton} alt="" onClick={deleteFunction}/>
         <span>Smazat</span>
-        </div>
+        </div>}
         </div>
     </div>
   );

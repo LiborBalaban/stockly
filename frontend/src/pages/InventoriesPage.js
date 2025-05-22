@@ -92,7 +92,7 @@ const handleDelete = async (url) => {
         {alert && (<AlertBox message={alertMessage} onClick={handleVisibility}/>)}
         <div className='page-header'>
         <h2>Inventury</h2>
-        <Button label = 'Přidat' onClick={() => setOpen(true)} style={'button addButton'} type={('button')}/>
+        {role === 3 && <Button label = 'Přidat' onClick={() => setOpen(true)} style={'button addButton'} type={('button')}/>}
         </div>
         {open && (
         <InventoryForm onSubmit={handleSubmit}/>

@@ -7,10 +7,11 @@ import { useNavigate} from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import Input from './inputs/input';
+import { useUser } from '../context/UserContext';
 
 const Product = ({name, id, category, quantity, code, image, position, link, deleteFunction}) => {
   const navigate = useNavigate();
-
+    const { role } = useUser();
   const navigateLink = () =>{
     navigate(`/fullapp/add-product/${id}`)
   }  
@@ -51,10 +52,10 @@ const Product = ({name, id, category, quantity, code, image, position, link, del
             <img src={EditButton}/>
             <span>Editovat</span>
         </Link>
-        <div  className='deleteItemButton editButton flex' onClick={deleteFunction}>
+        {role === 3 && <div  className='deleteItemButton editButton flex' onClick={deleteFunction}>
         <img src={DeleteButton} alt=""/>
         <span>Smazat</span>
-        </div>
+        </div>}
         </div>
       </div>
   );

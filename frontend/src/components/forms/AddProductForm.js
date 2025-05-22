@@ -7,12 +7,11 @@ import Button from '../button';
 import useData from '../../hooks/loadData';
 import { useUser } from '../../context/UserContext';
 
-const AddProductForm = ({onSubmit, data}) => {
+const AddProductForm = ({onSubmit, data, quantity}) => {
   const { role } = useUser();
     const [formData, setFormData] = useState({
         name: '',
         description: '',
-        quantity: '',
         categoryId: '',
         code: '',
       });
@@ -22,7 +21,6 @@ const AddProductForm = ({onSubmit, data}) => {
                       setFormData({
                         name: data.name,
                         description: data.description,
-                        quantity: data.totalStock,
                         categoryId: data.categoryId,
                         code: data.code,
                       });
@@ -58,7 +56,7 @@ const AddProductForm = ({onSubmit, data}) => {
         <Input placeholder='Zadej kód produktu...' name='code' type='number' label='Kód produktu' onChange={handleInputChange} value={formData.code}/>
         <div className='form-block'>
         <Select label='Vyber kategorii' data={categories} onSelect={handleSelectCategory} selected={formData.categoryId}/>
-        <Input placeholder='Zadej množství produktu...' name='quantity' type='number' label='Množství' onChange={handleInputChange} value={formData.quantity}/>
+        <Input placeholder='Zadej množství produktu...' name='quantity' type='number' label='Množství' onChange={handleInputChange} value={quantity}/>
         </div>
         {role === 3 && (<Button type='submit' label='Uložit' style='button addButton'/>)}
     </form>

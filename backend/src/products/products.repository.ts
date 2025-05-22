@@ -111,6 +111,17 @@ findStocks(productId: number, storageId: number): Promise<Stock[]> {
   });
 }
 
+async findProductStockSummary(productId: number) {
+  return this.prisma.stock.findMany({
+    where: {
+      productId,
+    },
+    select: {
+      quantity: true,
+    },
+  });
+ }
+
   async create(dto: CreateProductDto, companyId:number): Promise<Product> {
     return this.prisma.product.create({
       data:{

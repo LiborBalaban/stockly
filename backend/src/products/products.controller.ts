@@ -67,6 +67,30 @@ export class ProductsController {
   return this.productsService.findProductStock(+productId, storageId);
 }
 
+ @UseGuards(AuthGuard)
+  @Get(':productId/stock')
+  getProductStockUser(
+  @Param('productId') productId: string,
+  @Request() req,
+) {
+  const storageId = req.user?.storageId;
+
+  if (!storageId) {
+    throw new BadRequestException('Chybí storageId v URL nebo v uživatelském účtu.');
+  }
+
+  return this.productsService.findProductStock(+productId, storageId);
+}
+
+
+  @UseGuards(AdminGuard)
+  @Get('stock/company/:productId')
+  getProductStockCompany(
+  @Param('productId') productId: string,
+) {
+  return this.productsService.findProductCompanyStock(+productId);
+}
+
 @UseGuards(AdminGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto, @Request() req) {

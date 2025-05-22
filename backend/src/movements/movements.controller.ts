@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { MovementService} from './movements.service';
 import { CreateMovementDto } from './dto/create-movement.dto';
 import { UpdateMovementDto } from './dto/update-movement.dto';
@@ -23,6 +24,12 @@ export class MovementsController {
   findAllByCompany(@Request() req) {
     const companyId = req.user.companyId;
     return this.movementsService.findAllByCompany(companyId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('export/:id')
+  exportMovement(@Param('id') id: number, @Res() res: Response) {
+  return this.movementsService.exportMovementToExcel(id, res);
   }
 
   @UseGuards(AuthGuard)

@@ -64,15 +64,15 @@ const List = ({type, data, titles, deleteFunction, handlePice, handleQuantity, u
 
           {type === "inventories" && <Item name={item.name} link={`/fullapp/inventory/${item.id}`} deleteFunction={()=>deleteFunction(`http://localhost:5000/inventory/${item.id}`)}/>}
           
-          {type === "storage" && <Item name={item.name} info={item.city} link={`/admin/add-storage/${item.id}`} deleteFunction={()=>deleteFunction(`http://localhost:5000/delete-storage/${item.id}`)}/>}
+          {type === "storage" && <Item name={item.name} info={item.city} link={`/admin/add-storage/${item.id}`} deleteFunction={()=>deleteFunction(`http://localhost:5000/warehouses/${item.id}`)}/>}
           
-          {type === "supplier" && <Item name={item.name} info={item.email} link={`/admin/add-supplier/${item.id}`} deleteFunction={()=>deleteFunction(`http://localhost:5000/delete-supplier/${item.id}`)}/>}
+          {type === "supplier" && <Item name={item.name} info={item.email} link={`/admin/add-supplier/${item.id}`} deleteFunction={()=>deleteFunction(`http://localhost:5000/suppliers/${item.id}`)}/>}
           
-          {type === "employee" && <Item name={item.name} info={item.email} link={`/admin/add-employee/${item.id}`} deleteFunction={()=>deleteFunction(`http://localhost:5000/delete-employee/${item.id}`)}/>}
+          {type === "employee" && <Item name={item.name} info={item.email} link={`/admin/add-employee/${item.id}`} deleteFunction={()=>deleteFunction(`http://localhost:5000/users/${item.id}`)}/>}
           
           {type === "moves" && <StockInfo user={item.user.name} count={item.stockTransaction.length || ''} supplier={item.supplier?.name || ''} type={item.typeId} storage={item.storage.name} date={item.date} link={`/fullapp/movement/${item.id}`}/>}
           
-          {type === "moves_product" && (<StockInfo user={item.movement.user.name} count={item.quantity || ''} supplier={item.movement.supplier?.name || ''} type={item.movement.typeId} storage={item.movement.storage.name} date={item.movement.date} position={item.position?.name || 'Nedefinováno'}/>)}
+          {type === "moves_product" && (<StockInfo user={item.movement.user.name} count={item.quantity || ''} supplier={item.movement.supplier?.name || ''} type={item.movement.typeId} storage={item.movement.storage.name} date={item.movement.date} position={item.position?.name || 'Nedefinováno'} link={`/fullapp/movement/${item.movementId}`}/>)}
           
           {type === "stock" && <StockProduct id={item.id} name={item.name} code={item.code} handlePice={handlePice} handleQuantity={handleQuantity} updatePosition={updatePosition} data={positions} price={item.price} quantity={item.quantity} onClick={()=>deleteProduct(item.id)}/> }
 

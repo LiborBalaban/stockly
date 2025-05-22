@@ -1530,3 +1530,15 @@ height: 62px;
   height: 300px;
   margin-left: 10%;
 }
+
+.toggle-container {
+  margin: 10px 0;
+}
+
+.toggle-label {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
