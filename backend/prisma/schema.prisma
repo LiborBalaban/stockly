@@ -1,0 +1,271 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        Int             @id @default(autoincrement())
+  email     String          @unique @db.VarChar(255)
+  password  String          @db.VarChar(255)
+  isActive  Boolean         @default(false)
+  storageId Int?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  companyId Int
+  name      String          @db.VarChar(255)
+  token     String?          @db.VarChar(255) @unique
+  roleId    Int
+  movements StockMovement[]
+  company   Company         @relation(fields: [companyId], references: [id])
+  role      Role            @relation(fields: [roleId], references: [id])
+  storage   Storage?        @relation(fields: [storageId], references: [id])
+  uploadedDeliveries    ExpectedDelivery[]    @relation("ExpectedDeliveryUploadedBy")
+  inspectedDeliveries   ExpectedDelivery[]    @relation("ExpectedDeliveryInspector")
+  inventoryItems InventoryItem[]
+  inventory Inventory[]
+}
+
+model Role {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
+}
+
+model Company {
+  id         Int        @id @default(autoincrement())
+  name       String     @db.VarChar(255)
+  phone      String?    @db.VarChar(20)
+  email      String?    @db.VarChar(255)
+  address    String?    @db.VarChar(255)
+  psc        Int?
+  city       String?    @db.VarChar(255)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  categories Category[]
+  products   Product[]
+  storages   Storage[]
+  suppliers  Supplier[]
+  users      User[]
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(255)
+  description String
+  positionId  Int?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  companyId   Int
+  company     Company   @relation(fields: [companyId], references: [id])
+  position    Position? @relation(fields: [positionId], references: [id])
+  products    Product[]
+}
+
+model Position {
+  id               Int                @id @default(autoincrement())
+  name             String             @db.VarChar(255)
+  storageId        Int?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  categories       Category[]
+  storage          Storage?           @relation(fields: [storageId], references: [id])
+  positionProducts PositionProduct[]
+  products         Product[]
+  stockTransaction StockTransaction[]
+}
+
+model ProductImage {
+  id        Int      @id @default(autoincrement())
+  url       String   @db.VarChar(255)
+  productId Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product? @relation(fields: [productId], references: [id])
+}
+
+model PositionProduct {
+  id         Int      @id @default(autoincrement())
+  productId  Int
+  positionId Int
+  quantity   Int
+  position   Position @relation(fields: [positionId], references: [id])
+  product    Product  @relation(fields: [productId], references: [id])
+
+  @@unique([positionId, productId])
+}
+
+model Product {
+  id               Int                @id @default(autoincrement())
+  name             String             @db.VarChar(255)
+  code             String             @unique @db.VarChar(255)
+  description      String?
+  quantity         Int?               @default(0)
+  categoryId       Int?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  positionId       Int?
+  companyId        Int
+  positionProducts PositionProduct[]
+  category         Category?          @relation(fields: [categoryId], references: [id])
+  Company          Company            @relation(fields: [companyId], references: [id])
+  position         Position?          @relation(fields: [positionId], references: [id])
+  images           ProductImage[]
+  stocks           Stock[]
+  StockTransaction StockTransaction[]
+  ExpectedDeliveryItem ExpectedDeliveryItem[]
+  inventoryItems InventoryItem[]
+}
+
+model Storage {
+  id               Int                @id @default(autoincrement())
+  name             String             @db.VarChar(255)
+  phone            String             
+  address          String             @db.VarChar(255)
+  psc              Int
+  city             String             @db.VarChar(255)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  companyId        Int
+  positions        Position[]
+  stockMovements   StockMovement[]
+  stockTransaction StockTransaction[]
+  company          Company            @relation(fields: [companyId], references: [id])
+  users            User[]
+  ExpectedDelivery ExpectedDelivery[]
+  inventory Inventory[]
+}
+
+model Supplier {
+  id          Int             @id @default(autoincrement())
+  name        String          @db.VarChar(255)
+  email       String          @db.VarChar(255)
+  description String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  companyId   Int
+  phone       String
+  movements   StockMovement[]
+  ExpectedDelivery ExpectedDelivery[]
+  company     Company         @relation(fields: [companyId], references: [id])
+}
+
+model StockMovement {
+  id               Int                @id @default(autoincrement())
+  date             DateTime
+  storageId        Int
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  userId           Int
+  supplierId       Int?
+  typeId           Int
+  description      String             @db.VarChar(255)
+  invoiceNumber    Int?
+  expectedDeliveryId   Int? 
+  storage          Storage            @relation(fields: [storageId], references: [id])
+  supplier         Supplier?          @relation(fields: [supplierId], references: [id])
+  type             MovementType       @relation(fields: [typeId], references: [id])
+  user             User               @relation(fields: [userId], references: [id])
+  expectedDelivery     ExpectedDelivery?  @relation(fields: [expectedDeliveryId], references: [id])
+  stockTransaction StockTransaction[]
+}
+
+model Stock {
+  id        Int     @id @default(autoincrement())
+  storageId Int
+  productId Int
+  quantity  Int
+  products  Product @relation(fields: [productId], references: [id])
+
+  @@unique([productId, storageId])
+}
+
+model StockTransaction {
+  id         Int           @id @default(autoincrement())
+  movementId Int
+  productId  Int
+  quantity   Int
+  price      Int
+  storageId  Int
+  positionId Int?
+  movement   StockMovement @relation(fields: [movementId], references: [id])
+  position   Position?     @relation(fields: [positionId], references: [id])
+  product    Product       @relation(fields: [productId], references: [id])
+  storage    Storage       @relation(fields: [storageId], references: [id])
+}
+
+model MovementType {
+  id        Int             @id @default(autoincrement())
+  name      String          @db.VarChar(255)
+  movements StockMovement[]
+  expectedDelivery ExpectedDelivery[]
+}
+
+
+model ExpectedDelivery {
+  id             Int                     @id @default(autoincrement())
+  supplierId     Int?
+  storageId      Int
+  invoiceNumber  Int?
+  uploadedById   Int
+  inspectorId    Int?
+  confirmed      Boolean                 @default(false)
+  createdAt      DateTime                @default(now())
+  typeId         Int?
+
+  type           MovementType?            @relation(fields: [typeId], references: [id])
+  storage        Storage                 @relation(fields: [storageId], references: [id])
+  supplier       Supplier?               @relation(fields: [supplierId], references: [id])
+  uploadedBy     User                    @relation("ExpectedDeliveryUploadedBy", fields: [uploadedById], references: [id])
+  inspector      User?                   @relation("ExpectedDeliveryInspector", fields: [inspectorId], references: [id])
+  items          ExpectedDeliveryItem[]
+  stockMovements StockMovement[]         // Napojení zpět z pohybů
+}
+
+
+model ExpectedDeliveryItem {
+  id           Int              @id @default(autoincrement())
+  deliveryId   Int
+  productId    Int
+  quantity     Int
+  price        Int
+  note         String?          @db.VarChar(255)
+
+  delivery     ExpectedDelivery @relation(fields: [deliveryId], references: [id])
+  product      Product          @relation(fields: [productId], references: [id])
+}
+
+
+model Inventory {
+  id           Int              @id @default(autoincrement())
+  name             String             @db.VarChar(255)
+  storage    Storage        @relation(fields: [storageId], references: [id])
+  storageId  Int
+  createdBy    User             @relation(fields: [createdById], references: [id])
+  createdById  Int
+  createdAt    DateTime         @default(now())
+  finishedAt   DateTime?
+  items        InventoryItem[]
+}
+
+
+model InventoryItem {
+  id            Int        @id @default(autoincrement())
+  inventory     Inventory  @relation(fields: [inventoryId], references: [id])
+  inventoryId   Int
+  product       Product    @relation(fields: [productId], references: [id])
+  productId     Int
+  position      String?    // např. "A-01-03"
+  countedBy     User?      @relation(fields: [countedById], references: [id])
+  countedById   Int?
+  countedAt     DateTime?
+  realQuantity  Int?
+  expectedQty   Int?
+  difference    Int?       // Můžeš předpočítat nebo nechat null
+}
